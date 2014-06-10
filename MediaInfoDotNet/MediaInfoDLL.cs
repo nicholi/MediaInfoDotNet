@@ -195,20 +195,30 @@ namespace MediaInfoLib
 
         public MediaInfo()
         {
-            if (Environment.OSVersion.ToString().IndexOf("Windows") != -1)
+            // from old branches of upstream this looks like a basic .NET/mono check
+            // why you would split Unicode/Ansi support depending on Windows/non-Windows...no idea
+            if (Environment.OSVersion.ToString().IndexOf("Windows") == -1)
             {
-                // Determine bitness of system and pre-load appropriate library
-                if (moduleHandle == IntPtr.Zero)
-                {
-                    string fullexepath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                    FileInfo fi = new FileInfo(fullexepath);
-                    fullexepath = Path.Combine(fi.Directory.FullName, Environment.Is64BitProcess ? "x64" : "x86", "MediaInfo.dll");
-                    moduleHandle = UnsafeNativeMethods.LoadLibraryEx(fullexepath, IntPtr.Zero, 0);
-                }
+                // this is saying non-Windows environments are using the ANSI version of calls in mediainfo.dll
+                // should this even be here anymore? doesn't everyone pretty much have support for unicode?
                 MustUseAnsi = true;
             }
             else
+            {
+                // this is saying non-Windows environments are using the Unicode version of calls in mediainfo.dll
+                // we definitely want to load Unicode media files on Windows...it has supported Unicode filenames for a long time
+                // as well as any metadata which may be in Unicode
                 MustUseAnsi = false;
+            }
+
+            // Determine bitness of system and pre-load appropriate library
+            if (moduleHandle == IntPtr.Zero)
+            {
+                string fullexepath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                FileInfo fi = new FileInfo(fullexepath);
+                fullexepath = Path.Combine(fi.Directory.FullName, Environment.Is64BitProcess ? "x64" : "x86", "MediaInfo.dll");
+                moduleHandle = UnsafeNativeMethods.LoadLibraryEx(fullexepath, IntPtr.Zero, 0);
+            }
 
             // Open the loaded DLL for operation
             Handle = UnsafeNativeMethods.MediaInfo_New();
