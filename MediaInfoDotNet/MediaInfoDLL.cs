@@ -214,10 +214,21 @@ namespace MediaInfoLib
             // Determine bitness of system and pre-load appropriate library
             if (moduleHandle == IntPtr.Zero)
             {
-                string fullexepath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                FileInfo fi = new FileInfo(fullexepath);
-                fullexepath = Path.Combine(fi.Directory.FullName, Environment.Is64BitProcess ? "x64" : "x86", "MediaInfo.dll");
-                moduleHandle = UnsafeNativeMethods.LoadLibraryEx(fullexepath, IntPtr.Zero, 0);
+                string baseDir;
+                if (System.Reflection.Assembly.GetEntryAssembly() == null)
+                {
+                    // asp.net hosting
+                    baseDir = AppDomain.CurrentDomain.RelativeSearchPath;
+                }
+                else
+                {
+                    // other C# app
+                    string fullexepath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                    FileInfo fi = new FileInfo(fullexepath);
+                    baseDir = fi.Directory.FullName;
+                }
+                var mediaInfoDllPath = Path.Combine(baseDir, Environment.Is64BitProcess ? "x64" : "x86", "MediaInfo.dll");
+                moduleHandle = UnsafeNativeMethods.LoadLibraryEx(mediaInfoDllPath, IntPtr.Zero, 0);
             }
 
             // Open the loaded DLL for operation
