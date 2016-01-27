@@ -83,7 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Info_Parameter_7.67.txt" />
+    <None Include="Info-Parameters.txt" />
     <Content Include="MediaInfoDotNet.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

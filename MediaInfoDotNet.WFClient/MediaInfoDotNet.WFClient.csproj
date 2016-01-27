@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="DataSetKeywords.cs">
       <DependentUpon>DataSetKeywords.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="DataSetKeywords.Designer.cs">
       <AutoGen>True</AutoGen>
